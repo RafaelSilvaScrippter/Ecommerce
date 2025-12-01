@@ -3,27 +3,39 @@ import { Routes } from "../cors/routes.mjs";
 import { tableUsers } from "./tables.mjs";
 
 export class Auth {
-  constructor() {
+  constructor(routes) {
+    this.rotacionar = routes;
     this.dataBase = new DbConnect().dbInit();
-    this.init();
-    this.rotacionar = new Routes();
+    this.db();
+    this.gerenciarRota();
   }
-  postUser(req, res) {
+  postLogin(req, res) {
     res.end("usuarios");
+  }
+  postUserCreate(req, res) {
+    res.end("usuários create");
+  }
+
+  updateUser(req, res) {
+    res.end("usuário update");
+  }
+
+  deleteUser(req, res) {
+    res.end("usuário deletado");
+  }
+  resetPassword(req, res) {
+    res.end("password resetado");
   }
 
   db() {
     this.dataBase.exec(tableUsers);
   }
 
-  routes(req, res) {
-    if (this.rotacionar) {
-      this.rotacionar.get("/user", this.postUser(req, res));
-    }
-  }
-
-  init(req, res) {
-    this.db();
-    this.routes(req, res);
+  gerenciarRota(req, res) {
+    this.rotacionar.get("/auth/login", this.postLogin);
+    this.rotacionar.get("/auth/create", this.postUserCreate);
+    this.rotacionar.get("/auth/update", this.updateUser);
+    this.rotacionar.get("/auth/delete/user", this.deleteUser);
+    this.rotacionar.get("/auth/reset/password", this.resetPassword);
   }
 }
