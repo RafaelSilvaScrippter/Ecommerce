@@ -1,5 +1,6 @@
+import { createHash, pbkdf2Sync, randomBytes } from "crypto";
 import { DbConnect } from "../cors/connectDatabase.mjs";
-import { Routes } from "../cors/routes.mjs";
+import { Query } from "./query.mjs";
 import { tableUsers } from "./tables.mjs";
 
 export class Auth {
@@ -8,13 +9,27 @@ export class Auth {
     this.dataBase = new DbConnect().dbInit();
     this.db();
     this.gerenciarRota();
+    this.queryDb = new Query(this.dataBase);
   }
   postLogin(req, res) {
-    res.end("usuarios");
+    res.end(JSON.stringify(req.body));
   }
-  postUserCreate(req, res) {
-    res.end("usuários create");
-  }
+  postUserCreate = (req, res) => {
+    const { name, second_name, email, password, cpf } = req.body;
+    const salt = randomBytes(16).toString("hex");
+    const hash = pbkdf2Sync(password, salt, 100000, 64, "sha512").toString(
+      "hex"
+    );
+    this.queryDb.queryPostUser({
+      name,
+      second_name,
+      email,
+      password: hash,
+      cpf,
+      salt,
+    });
+    res.end(JSON.stringify(req.body));
+  };
 
   updateUser(req, res) {
     res.end("usuário update");
@@ -32,8 +47,8 @@ export class Auth {
   }
 
   gerenciarRota(req, res) {
-    this.rotacionar.get("/auth/login", this.postLogin);
-    this.rotacionar.get("/auth/create", this.postUserCreate);
+    this.rotacionar.post("/auth/login", this.postLogin);
+    this.rotacionar.post("/auth/create", this.postUserCreate);
     this.rotacionar.get("/auth/update", this.updateUser);
     this.rotacionar.get("/auth/delete/user", this.deleteUser);
     this.rotacionar.get("/auth/reset/password", this.resetPassword);

@@ -1,4 +1,3 @@
-import { DatabaseSync } from "node:sqlite";
 import { DbConnect } from "../../cors/connectDatabase.mjs";
 import { ProductsTables } from "./tables.mjs";
 import { tablesBuy } from "./tablesBuy.mjs";
@@ -27,6 +26,10 @@ export class Products {
     res.end("post products cart");
   }
 
+  deleteProducCart(req, res) {
+    res.end("delete products cart");
+  }
+
   getProductsBuy(req, res) {
     res.end("produtos comprados");
   }
@@ -42,9 +45,10 @@ export class Products {
 
   routes() {
     this.gerenciarRotas.get("/products", this.productsGet);
-    this.gerenciarRotas.get("/product/comments", this.getProductsComments);
+    this.gerenciarRotas.post("/product/comments", this.getProductsComments);
     this.gerenciarRotas.post("/product/comments", this.postProductsComments);
-    this.gerenciarRotas.get("/products/cart", this.postProductsCart);
+    this.gerenciarRotas.post("/products/cart", this.postProductsCart);
+    this.gerenciarRotas.delete("/products/cart", this.deleteProducCart);
     this.gerenciarRotas.get("/products/buy", this.getProductsBuy);
     this.gerenciarRotas.post("/products/buy", this.postProductsBuy);
   }
