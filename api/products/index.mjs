@@ -1,6 +1,12 @@
+import { DatabaseSync } from "node:sqlite";
+import { DbConnect } from "../../cors/connectDatabase.mjs";
+import { ProductsTables } from "./tables.mjs";
+
 export class Products {
   constructor(routes) {
     this.gerenciarRotas = routes;
+    this.database = new DbConnect().dbInit();
+    this.Db();
     this.routes();
   }
 
@@ -18,6 +24,10 @@ export class Products {
 
   postProductsCart(req, res) {
     res.end("post products cart");
+  }
+
+  Db() {
+    this.database.exec(ProductsTables);
   }
 
   routes() {
