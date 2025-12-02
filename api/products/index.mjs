@@ -26,6 +26,14 @@ export class Products {
     res.end("post products cart");
   }
 
+  getProductsBuy(req, res) {
+    res.end("produtos comprados");
+  }
+
+  postProductsBuy(req, res) {
+    res.end("produtos comprados");
+  }
+
   Db() {
     this.database.exec(ProductsTables);
   }
@@ -35,5 +43,7 @@ export class Products {
     this.gerenciarRotas.get("/product/comments", this.getProductsComments);
     this.gerenciarRotas.post("/product/comments", this.postProductsComments);
     this.gerenciarRotas.get("/products/cart", this.postProductsCart);
+    this.gerenciarRotas.get("/products/buy", this.getProductsBuy);
+    this.gerenciarRotas.post("/products/buy", this.postProductsBuy);
   }
 }
