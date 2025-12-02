@@ -12,4 +12,7 @@ export class Routes {
   post(route, handler) {
     this.routes["POST"][route] = handler;
   }
+  delete(route, handler) {
+    this.routes["POST"][route] = handler;
+  }
 }

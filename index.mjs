@@ -2,13 +2,15 @@ import { createServer } from "node:http";
 import { Routes } from "./cors/routes.mjs";
 import { Auth } from "./api/auth.mjs";
 import { Products } from "./api/products/index.mjs";
+import { CustomRequest } from "./cors/http/customRequest.mjs";
 
 const routes = new Routes();
 new Auth(routes);
 new Products(routes);
 
-const server = createServer((req, res) => {
-  const url = new URL(req.url || "/", "http://localhost");
+const server = createServer(async (request, res) => {
+  res.setHeader("Content-Type", "application/json");
+  const req = await CustomRequest(request);
   const handler = routes.routes[req.method][req.url];
   if (handler) {
     handler(req, res);
