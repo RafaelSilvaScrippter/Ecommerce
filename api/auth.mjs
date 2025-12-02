@@ -2,6 +2,7 @@ import { createHash, pbkdf2Sync, randomBytes } from "crypto";
 import { DbConnect } from "../cors/connectDatabase.mjs";
 import { Query } from "./query.mjs";
 import { tableUsers } from "./tables.mjs";
+import { RouterError } from "../cors/utils/routerError.mjs";
 
 export class Auth {
   constructor(routes) {
@@ -11,9 +12,32 @@ export class Auth {
     this.gerenciarRota();
     this.queryDb = new Query(this.dataBase);
   }
-  postLogin(req, res) {
-    res.end(JSON.stringify(req.body));
-  }
+  postLogin = (req, res) => {
+    const { email, password } = req.body;
+    const login = this.queryDb.getLogin({ email });
+
+    if (!login) {
+      res.end(JSON.stringify({ status: 404, message: "Email não cadastrado" }));
+      throw new RouterError(404, "Email ou senha incorretos");
+    }
+
+    const hashToCompare = pbkdf2Sync(
+      password,
+      login?.SALT,
+      100000,
+      64,
+      "sha512"
+    ).toString("hex");
+
+    if (hashToCompare !== login.password) {
+      res.end(
+        JSON.stringify({ status: 404, message: "Usuário ou senha incorretos" })
+      );
+      throw new RouterError(404, "Usuário ou senha incorretos");
+    }
+
+    res.end(JSON.stringify({ status: 200, message: "logado" }));
+  };
   postUserCreate = (req, res) => {
     const { name, second_name, email, password, cpf } = req.body;
     const salt = randomBytes(16).toString("hex");

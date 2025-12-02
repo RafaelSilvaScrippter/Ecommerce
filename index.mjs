@@ -11,11 +11,15 @@ new Products(routes);
 const server = createServer(async (request, res) => {
   res.setHeader("Content-Type", "application/json");
   const req = await CustomRequest(request);
-  const handler = routes.routes[req.method][req.url];
-  if (handler) {
-    handler(req, res);
-  } else {
-    res.end("nenhuma rota encontrada");
+  try {
+    const handler = routes.routes[req.method][req.url];
+    if (handler) {
+      handler(req, res);
+    } else {
+      res.end("nenhuma rota encontrada");
+    }
+  } catch (err) {
+    console.log(err);
   }
 });
 
