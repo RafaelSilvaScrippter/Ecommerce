@@ -2,6 +2,16 @@ export class Query {
   constructor(db) {
     this.db = db;
   }
+  getLogin({ email }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      SELECT * FROM "users" WHERE "email" = ?
+
+    `
+      )
+      .get(email);
+  }
   queryPostUser({ name, second_name, email, password, cpf, salt }) {
     return this.db
       .prepare(
