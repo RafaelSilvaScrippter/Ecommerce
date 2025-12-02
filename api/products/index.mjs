@@ -1,6 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { DbConnect } from "../../cors/connectDatabase.mjs";
 import { ProductsTables } from "./tables.mjs";
+import { tablesBuy } from "./tablesBuy.mjs";
 
 export class Products {
   constructor(routes) {
@@ -36,6 +37,7 @@ export class Products {
 
   Db() {
     this.database.exec(ProductsTables);
+    this.database.exec(tablesBuy);
   }
 
   routes() {
