@@ -24,4 +24,17 @@ export class Query {
       )
       .run(name, second_name, email, password, cpf, salt);
   }
+  inserSession({ user_id, sid_hash }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      
+      INSERT INTO  "sessions"
+      ("user_id","session_hash")
+      VALUES 
+      (?,?)
+    `
+      )
+      .run(user_id, sid_hash);
+  }
 }
