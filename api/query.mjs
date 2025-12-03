@@ -2,15 +2,15 @@ export class Query {
   constructor(db) {
     this.db = db;
   }
-  getLogin({ email }) {
+  getLogin({ key, value }) {
     return this.db
       .prepare(
         /*sql */ `
-      SELECT * FROM "users" WHERE "email" = ?
+      SELECT * FROM "users" WHERE ${key} = ?
 
     `
       )
-      .get(email);
+      .get(value);
   }
   queryPostUser({ name, second_name, email, password, cpf, salt }) {
     return this.db
@@ -36,5 +36,19 @@ export class Query {
     `
       )
       .run(user_id, sid_hash);
+  }
+  getSession({ sid_hash }) {
+    try {
+      return this.db
+        .prepare(
+          /*sql */ `
+        
+        SELECT "user_id" FROM "sessions" WHERE "session_hash" = ?
+        `
+        )
+        .get(sid_hash);
+    } catch (err) {
+      console.log("erro no get session auth");
+    }
   }
 }
