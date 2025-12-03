@@ -2,6 +2,7 @@ export async function CustomRequest(req) {
   const url = new URL(req.url || "/", "http://localhost");
   req.pathname = url.pathname;
   req.query = url.searchParams;
+  req.session;
   const chunks = [];
 
   for await (const chunk of req) {
@@ -14,6 +15,5 @@ export async function CustomRequest(req) {
   } else {
     req.body = body;
   }
-  console.log(req.body);
   return req;
 }

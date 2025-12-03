@@ -4,6 +4,7 @@ import { Query } from "./query.mjs";
 import { tableUsers } from "./tables.mjs";
 import { RouterError } from "../core/utils/routerError.mjs";
 import { SetCookie } from "../core/utils/set-cookies.mjs";
+import { logged } from "../core/midleware/logded.mjs";
 
 export class Auth {
   constructor(routes) {
@@ -12,6 +13,7 @@ export class Auth {
     this.db();
     this.gerenciarRota();
     this.queryDb = new Query(this.dataBase);
+    console.log(this.middleware);
   }
   postLogin = (req, res) => {
     const { email, password } = req.body;
@@ -68,33 +70,32 @@ export class Auth {
     res.end(JSON.stringify(req.body));
   };
 
-  getUser = (req, res) => {
-    const indice = req.headers.cookie?.indexOf("=");
-    const getCookieHash = req.headers.cookie?.substring(indice + 1);
-    console.log(getCookieHash);
-    if (!getCookieHash) {
-      res.statusCode = 404;
-      throw new RouterError(404, "Cookie inválido");
-    }
-    try {
-      const { user_id } = this.queryDb.getSession({ sid_hash: getCookieHash });
-      if (!user_id) {
-        res.statusCode = 404;
-        throw new RouterError(404, "Não autenticado");
-      }
-      const login = this.queryDb.getLogin({ key: "user_id", value: user_id });
-      console.log(login);
-      res.statusCode = 200;
-      res.end(JSON.stringify("usuário get"));
-    } catch (err) {
-      console.log(err);
-    }
+  getUser = async (req, res) => {
+    const session = await logged(req, res);
+    res.end(JSON.stringify({ session }));
   };
 
-  updateUser(req, res) {
-    res.setHeader("Set-Cookie", "hello=world");
-    res.end("usuário update");
-  }
+  updateUser = async (req, res) => {
+    const { name, second_name, email } = req.body;
+    const session = await logged(req, res);
+    if (!session.user_id) {
+      throw new RouterError(404, "não autorizado");
+    }
+
+    console.log(name, second_name, email);
+
+    const { changes } = this.queryDb.updateUser({
+      user_id: session.user_id,
+      name,
+      second_name,
+      email,
+    });
+    if (changes === 0) {
+      throw new RouterError("usuário não atualizado");
+    }
+
+    res.end(JSON.stringify({ message: "Usuário atualzizado" }));
+  };
 
   deleteUser(req, res) {
     res.end("usuário deletado");
@@ -111,7 +112,7 @@ export class Auth {
     this.rotacionar.post("/auth/login", this.postLogin);
     this.rotacionar.get("/auth/user", this.getUser);
     this.rotacionar.post("/auth/create", this.postUserCreate);
-    this.rotacionar.get("/auth/update", this.updateUser);
+    this.rotacionar.put("/auth/update", this.updateUser);
     this.rotacionar.get("/auth/delete/user", this.deleteUser);
     this.rotacionar.get("/auth/reset/password", this.resetPassword);
   }

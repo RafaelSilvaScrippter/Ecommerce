@@ -13,6 +13,9 @@ export class Routes {
     this.routes["POST"][route] = handler;
   }
   delete(route, handler) {
-    this.routes["POST"][route] = handler;
+    this.routes["DELETE"][route] = handler;
+  }
+  put(route, handler) {
+    this.routes["PUT"][route] = handler;
   }
 }
