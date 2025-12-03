@@ -1,8 +1,9 @@
 import { createHash, pbkdf2Sync, randomBytes } from "crypto";
-import { DbConnect } from "../cors/connectDatabase.mjs";
+import { DbConnect } from "../core/connectDatabase.mjs";
 import { Query } from "./query.mjs";
 import { tableUsers } from "./tables.mjs";
-import { RouterError } from "../cors/utils/routerError.mjs";
+import { RouterError } from "../core/utils/routerError.mjs";
+import { SetCookie } from "../core/utils/set-cookies.mjs";
 
 export class Auth {
   constructor(routes) {
@@ -13,7 +14,6 @@ export class Auth {
     this.queryDb = new Query(this.dataBase);
   }
   postLogin = (req, res) => {
-    res.setHeader("Set-Cookie", "hello=world");
     const { email, password } = req.body;
     const login = this.queryDb.getLogin({ email });
 
@@ -38,8 +38,18 @@ export class Auth {
     }
 
     const hash_session = randomBytes(32).toString("base64url");
+    const cookie = `__Secure-uid=${hash_session}; Path=/; Secure; HttpOnly;SameSite=Lax`;
 
-    res.end(JSON.stringify({ status: 200, message: "logado" }));
+    const { changes } = this.queryDb.insertSession({
+      user_id: login.user_id,
+      sid_hash: hash_session,
+    });
+
+    SetCookie(res, cookie);
+    if (changes > 0) {
+      res.statusCode = 200;
+      res.end(JSON.stringify({ status: 200, message: "logado" }));
+    }
   };
   postUserCreate = (req, res) => {
     const { name, second_name, email, password, cpf } = req.body;
@@ -59,6 +69,7 @@ export class Auth {
   };
 
   updateUser(req, res) {
+    res.setHeader("Set-Cookie", "hello=world");
     res.end("usuário update");
   }
 

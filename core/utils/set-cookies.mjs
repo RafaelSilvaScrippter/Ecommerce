@@ -1,5 +1,4 @@
 export function SetCookie(res, cookies) {
-  console.log(cookies);
   const current = res.getHeader("Set-Cookie");
   if (!current) {
     res.setHeader("Set-Cookie", [cookies]);

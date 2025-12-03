@@ -1,4 +1,4 @@
-import { DbConnect } from "../../cors/connectDatabase.mjs";
+import { DbConnect } from "../../core/connectDatabase.mjs";
 import { ProductsTables } from "./tables.mjs";
 import { tablesBuy } from "./tablesBuy.mjs";
 
