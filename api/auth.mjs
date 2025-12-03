@@ -15,7 +15,7 @@ export class Auth {
   }
   postLogin = (req, res) => {
     const { email, password } = req.body;
-    const login = this.queryDb.getLogin({ email });
+    const login = this.queryDb.getLogin({ key: "email", value: email });
 
     if (!login) {
       res.end(JSON.stringify({ status: 404, message: "Email não cadastrado" }));
@@ -68,6 +68,29 @@ export class Auth {
     res.end(JSON.stringify(req.body));
   };
 
+  getUser = (req, res) => {
+    const indice = req.headers.cookie?.indexOf("=");
+    const getCookieHash = req.headers.cookie?.substring(indice + 1);
+    console.log(getCookieHash);
+    if (!getCookieHash) {
+      res.statusCode = 404;
+      throw new RouterError(404, "Cookie inválido");
+    }
+    try {
+      const { user_id } = this.queryDb.getSession({ sid_hash: getCookieHash });
+      if (!user_id) {
+        res.statusCode = 404;
+        throw new RouterError(404, "Não autenticado");
+      }
+      const login = this.queryDb.getLogin({ key: "user_id", value: user_id });
+      console.log(login);
+      res.statusCode = 200;
+      res.end(JSON.stringify("usuário get"));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   updateUser(req, res) {
     res.setHeader("Set-Cookie", "hello=world");
     res.end("usuário update");
@@ -86,6 +109,7 @@ export class Auth {
 
   gerenciarRota(req, res) {
     this.rotacionar.post("/auth/login", this.postLogin);
+    this.rotacionar.get("/auth/user", this.getUser);
     this.rotacionar.post("/auth/create", this.postUserCreate);
     this.rotacionar.get("/auth/update", this.updateUser);
     this.rotacionar.get("/auth/delete/user", this.deleteUser);

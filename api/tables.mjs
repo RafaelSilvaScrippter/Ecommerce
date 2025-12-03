@@ -5,6 +5,7 @@ export const tableUsers =
   ("id" INTEGER PRIMARY KEY,
     "user_id" INTEGER,
     "session_hash" TEXT NOT NULL,
+    "revoked" TEXT NOT NULL DEFAULT 0 CHECK ("revoked" IN (0,1)),
     FOREIGN KEY ("user_id") REFERENCES "users" ("user_id")
   );
   CREATE TABLE IF NOT EXISTS "users"
