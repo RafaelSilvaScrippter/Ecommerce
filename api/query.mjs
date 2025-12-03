@@ -51,4 +51,18 @@ export class Query {
       console.log("erro no get session auth");
     }
   }
+
+  updateUser({ user_id, name, second_name, email }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      UPDATE "users" SET
+      "name" = ?,
+      "second_name" = ?,
+      "email" = ?
+      WHERE "user_id" = ${user_id}
+    `
+      )
+      .run(name, second_name, email);
+  }
 }
