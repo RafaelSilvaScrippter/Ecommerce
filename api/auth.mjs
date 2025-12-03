@@ -13,6 +13,7 @@ export class Auth {
     this.queryDb = new Query(this.dataBase);
   }
   postLogin = (req, res) => {
+    res.setHeader("Set-Cookie", "hello=world");
     const { email, password } = req.body;
     const login = this.queryDb.getLogin({ email });
 
@@ -35,6 +36,8 @@ export class Auth {
       );
       throw new RouterError(404, "Usuário ou senha incorretos");
     }
+
+    const hash_session = randomBytes(32).toString("base64url");
 
     res.end(JSON.stringify({ status: 200, message: "logado" }));
   };
