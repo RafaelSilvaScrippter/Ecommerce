@@ -18,16 +18,15 @@ routes.get("/", async (req, res) => {
 const server = createServer(async (request, res) => {
   res.setHeader("Content-Type", "application/json");
   const req = await CustomRequest(request);
-  try {
-    const handler = routes.routes[req.method][req.url];
-    if (handler) {
-      handler(req, res);
-    } else {
-      res.end("nenhuma rota encontrada");
-    }
-  } catch (err) {
-    console.log(err);
+  const result = routes.findHandler(req.method, req.url);
+  if (!result) {
+    res.writeHead(404);
+    res.end("Not found");
+    return;
   }
+
+  req.params = result.params;
+  result.handler(req, res);
 });
 
 server.listen(3000, () => {

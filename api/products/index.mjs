@@ -44,8 +44,8 @@ export class Products {
   }
 
   routes() {
-    this.gerenciarRotas.get("/products", this.productsGet);
-    this.gerenciarRotas.post("/product/comments", this.getProductsComments);
+    this.gerenciarRotas.get("/products/:hello", this.productsGet);
+    this.gerenciarRotas.get("/product/comments", this.getProductsComments);
     this.gerenciarRotas.post("/product/comments", this.postProductsComments);
     this.gerenciarRotas.post("/products/cart", this.postProductsCart);
     this.gerenciarRotas.delete("/products/cart", this.deleteProducCart);
