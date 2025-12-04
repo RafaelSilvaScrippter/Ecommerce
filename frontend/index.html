@@ -11,15 +11,15 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/auth/update", {
-        method: "PUT",
+      const response = await fetch("http://localhost:3000/auth/reset/password", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: "Carlos",
-          second_name: "silva",
           email: "rafa@origamid.com",
+          token: "0PRls_ogh_S-Bq_9IXbpPA",
+          password: "silva"
         }),
       });
 

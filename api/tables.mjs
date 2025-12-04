@@ -15,6 +15,12 @@ export const tableUsers =
     "email" TEXT UNIQUE NOT NULL,
     "senha" TEXT NOT NULL,
     "CPF" INTEGER UNIQUE NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS "reset_password"
+  ("id" INTEGER PRIMARY KEY,
+  "user_id" INTEGER NOT NULL,
+  "token" TEXT NOT NULL,
+  FOREIGN KEY ("user_id") REFERENCES "users" ("user_id")
   )
 
 `;
