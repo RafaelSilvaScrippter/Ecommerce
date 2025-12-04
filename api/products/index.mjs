@@ -1,4 +1,5 @@
 import { DbConnect } from "../../core/connectDatabase.mjs";
+import { logged } from "../../core/midleware/logded.mjs";
 import { RouterError } from "../../core/utils/routerError.mjs";
 import { Query } from "./query.mjs";
 import { ProductsTables } from "./tables.mjs";
@@ -43,12 +44,26 @@ export class Products {
 
   postProducts = async (req, res) => {
     const { name, price, description, photo, slug } = req.body;
-    console.log(name, price, description, photo, slug);
+    const session = logged(req, res);
+    if (session.role !== "user") {
+      res.statusCode = 403;
+      res.end(JSON.stringify({ status: 403, mensagem: "Erro de permissão" }));
+      try {
+        throw new RouterError(403, "Erro de permissão");
+      } catch (err) {
+        console.log(err);
+      }
+      return;
+    }
     const existSlug = this.query.verifySlugExists({ slug });
     if (existSlug) {
       res.statusCode = 409;
       res.end(JSON.stringify({ message: "slug já existe" }));
-      throw new RouterError(409, "slug já definido");
+      try {
+        throw new RouterError(409, "slug já definido");
+      } catch (err) {
+        console.log(err);
+      }
     }
     const postProduto = this.query.postProducts({
       name,
@@ -58,7 +73,11 @@ export class Products {
       slug,
     });
     if (postProduto.changes === 0) {
-      throw new RouterError(500, "erro ao postar produto");
+      try {
+        throw new RouterError(500, "erro ao postar produto");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     res.statusCode = 201;

@@ -27,7 +27,7 @@ export class Auth {
 
     const hashToCompare = pbkdf2Sync(
       password,
-      login?.SALT,
+      login.salt,
       100000,
       64,
       "sha512"
@@ -159,9 +159,6 @@ export class Auth {
     const deleteAllResetPassword = this.queryDb.deleteTokenOld({
       user_id: login.user_id,
     });
-
-    console.log(deleteAllResetPassword);
-
     res.end(JSON.stringify({ message: "Usuário atualizado" }));
   };
 

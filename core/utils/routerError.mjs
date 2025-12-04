@@ -1,6 +1,10 @@
 export class RouterError extends Error {
   constructor(status, message) {
-    this.status = status;
-    this.message = message;
+    try {
+      super(message);
+      this.status = status;
+    } catch (err) {
+      console.log(err + message);
+    }
   }
 }
