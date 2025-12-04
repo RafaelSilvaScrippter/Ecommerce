@@ -11,17 +11,17 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/products", {
+      const response = await fetch("http://localhost:3000/auth/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          slug: "lavadoura-de-louca-samsung",
-          name: "Lavadoura de louça",
-          price: 2000.90,
-          description: "Lavadoura de ultima geração",
-          photo: "/lavadoura.jpg"
+          name: "Rafael",
+          second_name: "Silva",
+          email: "rafa@origamid.com",
+          password: "silva",
+          cpf: "01755267029"
         }),
       });
 
