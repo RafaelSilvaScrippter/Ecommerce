@@ -65,4 +65,63 @@ export class Query {
       )
       .run(name, second_name, email);
   }
+
+  resetPassword({ user_id, token }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      INSERT INTO "reset_password"
+       ("user_id","token")
+       VALUES
+       (?,?)
+    `
+      )
+      .run(user_id, token);
+  }
+
+  deleteTokenOld({ user_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      DELETE  FROM "reset_password"
+      WHERE "user_id" == ?  
+    `
+      )
+      .run(user_id);
+  }
+
+  compareToken({ token }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      SELECT * FROM "reset_password"
+      WHERE "token" = ?  
+    `
+      )
+      .run(token);
+  }
+  getToken({ user_id, token }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      SELECT * FROM "reset_password"
+      WHERE "user_id" = ? 
+      AND   "token" = ?
+    `
+      )
+      .run(user_id, token);
+  }
+  updatePassword({ user_id, password, salt }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      UPDATE "users"
+      SET "password" = ?,
+      "SALT" = ?
+      WHERE "user_id" = ${user_id}
+    `
+      )
+      .run(password, salt);
+  }
 }

@@ -100,9 +100,67 @@ export class Auth {
   deleteUser(req, res) {
     res.end("usuário deletado");
   }
-  resetPassword(req, res) {
-    res.end("password resetado");
-  }
+  envEmailReset = (req, res) => {
+    const { email } = req.body;
+
+    const login = this.queryDb.getLogin({ key: "email", value: email });
+    if (!login) {
+      res.end(JSON.stringify({ message: "Email não cadastrado" }));
+      throw new RouterError(404, "email não cadastrado");
+    }
+
+    const deletetTokenOld = this.queryDb.deleteTokenOld({
+      user_id: login.user_id,
+    });
+
+    const hashToken = randomBytes(16).toString("base64url");
+    const setTokenReset = this.queryDb.resetPassword({
+      user_id: login.user_id,
+      token: hashToken,
+    });
+
+    const corpoEmail = {
+      email: email,
+      token: hashToken,
+    };
+    res.end(JSON.stringify({ corpoEmail }));
+  };
+
+  resetPassword = (req, res) => {
+    const { email, token, password } = req.body;
+    const login = this.queryDb.getLogin({ key: "email", value: email });
+
+    const { changes } = this.queryDb.getToken({
+      user_id: login.user_id,
+      token: token,
+    });
+
+    if (changes) {
+      throw new RouterError(500, "Algo deu errado");
+    }
+
+    const salt = randomBytes(16).toString("hex");
+    const hash = pbkdf2Sync(password, salt, 100000, 64, "sha512").toString(
+      "hex"
+    );
+    const updatedPassword = this.queryDb.updatePassword({
+      user_id: login.user_id,
+      password: hash,
+      salt: salt,
+    });
+
+    if (updatedPassword === 0) {
+      throw new RouterError(500, "erro ao atualizar senha");
+    }
+
+    const deleteAllResetPassword = this.queryDb.deleteTokenOld({
+      user_id: login.user_id,
+    });
+
+    console.log(deleteAllResetPassword);
+
+    res.end(JSON.stringify({ message: "Usuário atualizado" }));
+  };
 
   db() {
     this.dataBase.exec(tableUsers);
@@ -114,6 +172,7 @@ export class Auth {
     this.rotacionar.post("/auth/create", this.postUserCreate);
     this.rotacionar.put("/auth/update", this.updateUser);
     this.rotacionar.get("/auth/delete/user", this.deleteUser);
-    this.rotacionar.get("/auth/reset/password", this.resetPassword);
+    this.rotacionar.post("/auth/email/reset/password", this.envEmailReset);
+    this.rotacionar.post("/auth/reset/password", this.resetPassword);
   }
 }
