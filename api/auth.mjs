@@ -22,7 +22,11 @@ export class Auth {
     if (!login) {
       res.statusCode = 404;
       res.end(JSON.stringify({ status: 404, message: "Email não cadastrado" }));
-      throw new RouterError(404, "Email ou senha incorretos");
+      try {
+        throw new RouterError(404, "Email ou senha incorretos");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const hashToCompare = pbkdf2Sync(
@@ -38,7 +42,11 @@ export class Auth {
       res.end(
         JSON.stringify({ status: 404, message: "Usuário ou senha incorretos" })
       );
-      throw new RouterError(404, "Usuário ou senha incorretos");
+      try {
+        throw new RouterError(404, "Usuário ou senha incorretos");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const hash_session = randomBytes(32).toString("base64url");
@@ -82,7 +90,13 @@ export class Auth {
     const { name, second_name, email } = req.body;
     const session = await logged(req, res);
     if (!session.user_id) {
-      throw new RouterError(404, "não autorizado");
+      res.statusCode = 409;
+      res.end(JSON.stringify({ message: "erro de permissão" }));
+      try {
+        throw new RouterError(409, "não autorizado");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     console.log(name, second_name, email);
@@ -94,7 +108,11 @@ export class Auth {
       email,
     });
     if (changes === 0) {
-      throw new RouterError(404, "usuário não atualizado");
+      try {
+        throw new RouterError(404, "usuário não atualizado");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     res.end(JSON.stringify({ message: "Usuário atualzizado" }));
@@ -108,8 +126,13 @@ export class Auth {
 
     const login = this.queryDb.getLogin({ key: "email", value: email });
     if (!login) {
+      res.statusCode = 404;
       res.end(JSON.stringify({ message: "Email não cadastrado" }));
-      throw new RouterError(404, "email não cadastrado");
+      try {
+        throw new RouterError(404, "email não cadastrado");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const deletetTokenOld = this.queryDb.deleteTokenOld({
@@ -139,7 +162,11 @@ export class Auth {
     });
 
     if (changes) {
-      throw new RouterError(500, "Algo deu errado");
+      try {
+        throw new RouterError(500, "Algo deu errado");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const salt = randomBytes(16).toString("hex");
@@ -153,7 +180,11 @@ export class Auth {
     });
 
     if (updatedPassword === 0) {
-      throw new RouterError(500, "erro ao atualizar senha");
+      try {
+        throw new RouterError(500, "erro ao atualizar senha");
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const deleteAllResetPassword = this.queryDb.deleteTokenOld({
