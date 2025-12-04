@@ -10,10 +10,10 @@ export class Auth {
   constructor(routes) {
     this.rotacionar = routes;
     this.dataBase = new DbConnect().dbInit();
-    this.db();
     this.gerenciarRota();
     this.queryDb = new Query(this.dataBase);
     console.log(this.middleware);
+    this.db();
   }
   postLogin = (req, res) => {
     const { email, password } = req.body;
@@ -94,7 +94,7 @@ export class Auth {
       email,
     });
     if (changes === 0) {
-      throw new RouterError("usuário não atualizado");
+      throw new RouterError(404, "usuário não atualizado");
     }
 
     res.end(JSON.stringify({ message: "Usuário atualzizado" }));
