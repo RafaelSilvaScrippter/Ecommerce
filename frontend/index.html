@@ -11,15 +11,17 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/auth/reset/password", {
+      const response = await fetch("http://localhost:3000/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "rafa@origamid.com",
-          token: "0PRls_ogh_S-Bq_9IXbpPA",
-          password: "silva"
+          slug: "lavadoura-de-louca-samsung",
+          name: "Lavadoura de louça",
+          price: 2000.90,
+          description: "Lavadoura de ultima geração",
+          photo: "/lavadoura.jpg"
         }),
       });
 

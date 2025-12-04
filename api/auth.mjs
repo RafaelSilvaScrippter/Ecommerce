@@ -1,4 +1,4 @@
-import { createHash, pbkdf2Sync, randomBytes } from "crypto";
+import { pbkdf2Sync, randomBytes } from "crypto";
 import { DbConnect } from "../core/connectDatabase.mjs";
 import { Query } from "./query.mjs";
 import { tableUsers } from "./tables.mjs";
@@ -20,6 +20,7 @@ export class Auth {
     const login = this.queryDb.getLogin({ key: "email", value: email });
 
     if (!login) {
+      res.statusCode = 404;
       res.end(JSON.stringify({ status: 404, message: "Email não cadastrado" }));
       throw new RouterError(404, "Email ou senha incorretos");
     }
@@ -33,6 +34,7 @@ export class Auth {
     ).toString("hex");
 
     if (hashToCompare !== login.password) {
+      res.statusCode = 404;
       res.end(
         JSON.stringify({ status: 404, message: "Usuário ou senha incorretos" })
       );
@@ -67,6 +69,7 @@ export class Auth {
       cpf,
       salt,
     });
+    res.statusCode = 201;
     res.end(JSON.stringify(req.body));
   };
 
