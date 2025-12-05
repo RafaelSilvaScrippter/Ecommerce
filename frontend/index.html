@@ -11,17 +11,13 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/products", {
+      const response = await fetch("http://localhost:3000/product/comments/1", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: "Rafael",
-          second_name: "Silva",
-          email: "rafa@origamid.com",
-          password: "silva",
-          cpf: "01755267029"
+          comment: "comprei  o produto bom de mais"
         }),
       });
 

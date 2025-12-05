@@ -22,9 +22,54 @@ export class Products {
     res.end("products get comments");
   }
 
-  postProductsComments(req, res) {
-    res.end("products comments post");
-  }
+  postProductsComments = async (req, res) => {
+    const { idProduct } = req.params;
+    const { comment } = req.body;
+    const productExixstId = this.query.getProducts({ id: idProduct });
+    if (!productExixstId) {
+      res.statusCode = 404;
+      res.end(JSON.stringify({ message: "produto não encontrado" }));
+      try {
+        throw new RouterError(
+          404,
+          "Erro get pelo id do produto retorna undefined"
+        );
+      } catch (erro) {
+        console.log(erro);
+        return;
+      }
+    }
+    const getUserLogged = await logged(req, res);
+    if (!getUserLogged) {
+      try {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ status: 401, message: "login necessário" }));
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+    const { id } = productExixstId;
+
+    const postCommentInProduct = this.query.postCommentsProducts({
+      product_id: id,
+      user_id: getUserLogged.user_id,
+      comment,
+    });
+
+    if (postCommentInProduct.changes === 0) {
+      try {
+        res.statusCode = 500;
+        throw new RouterError(500, "ocorreu um erro ao postar cometário");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
+    res.statusCode = 201;
+    res.end(JSON.stringify({ status: 201, message: "Comentário postado" }));
+  };
 
   postProductsCart(req, res) {
     res.end("post products cart");
@@ -94,7 +139,10 @@ export class Products {
   routes() {
     this.gerenciarRotas.get("/products", this.productsGet);
     this.gerenciarRotas.get("/product/comments", this.getProductsComments);
-    this.gerenciarRotas.post("/product/comments", this.postProductsComments);
+    this.gerenciarRotas.post(
+      "/product/comments/:idProduct",
+      this.postProductsComments
+    );
     this.gerenciarRotas.post("/products/cart", this.postProductsCart);
     this.gerenciarRotas.delete("/products/cart", this.deleteProducCart);
     this.gerenciarRotas.get("/products/buy", this.getProductsBuy);

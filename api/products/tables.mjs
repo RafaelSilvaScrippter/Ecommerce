@@ -8,9 +8,12 @@ export const ProductsTables = /*sql */ `
     "description" TEXT NOT NULL
   ) STRICT;
   CREATE TABLE IF NOT EXISTS "comments"
-  ("product_id" INTEGER PRIMARY KEY,
+  ("id_comment" INTEGER PRIMARY KEY,
+    "product_id" INTEGER NOT NULL,
     "comment" TEXT NOT NULL,
-    FOREIGN KEY("product_id") REFERENCES "products" ("id")
+    "user_id" INTEGER NOT NULL,
+    FOREIGN KEY("product_id") REFERENCES "products" ("id") ON DELETE CASCADE,
+     FOREIGN KEY("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE
   ) STRICT;
   CREATE TABLE IF NOT EXISTS "cart"
   ("product_id" INTEGER PRIMARY KEY,
