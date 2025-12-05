@@ -4,6 +4,7 @@ import { RouterError } from "../../core/utils/routerError.mjs";
 import { Query } from "./query.mjs";
 import { ProductsTables } from "./tables.mjs";
 import { tablesBuy } from "./tablesBuy.mjs";
+import { TableCart } from "./tablesCart.mjs";
 
 export class Products {
   constructor(routes) {
@@ -176,6 +177,7 @@ export class Products {
   Db() {
     this.database.exec(ProductsTables);
     this.database.exec(tablesBuy);
+    this.database.exec(TableCart);
   }
 
   routes() {
