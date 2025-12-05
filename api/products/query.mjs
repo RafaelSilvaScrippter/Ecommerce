@@ -25,22 +25,20 @@ export class Query {
       )
       .all();
   }
-  getProduct({ slug }) {
-    console.log(slug);
+  getProduct({ key, value }) {
     return this.db
       .prepare(
         /*sql */ `
       
       SELECT * FROM "products"
-      WHERE "slug" = ?
+      WHERE ${key} = ?
     `
       )
-      .get(slug);
+      .get(value);
   }
 
   getUserForComment(user_id) {
     return user_id.map((dados) => {
-      console.log(dados);
       return this.db
         .prepare(
           /*sql */ `
@@ -91,5 +89,33 @@ export class Query {
     `
       )
       .get(slug);
+  }
+
+  insertProductCart({ product_id, quantity }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      INSERT INTO "product_cart"
+      ("product_id","quantity")
+      VALUES(?,?)
+      ON CONFLICT("product_id")
+      DO UPDATE SET
+      "quantity" = excluded."quantity"
+    `
+      )
+      .run(product_id, quantity);
+  }
+  getProductCart({ product_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      SELECT "quantity" FROM "product_cart"
+      WHERE "product_id" = ?
+      
+    `
+      )
+      .get(product_id);
   }
 }
