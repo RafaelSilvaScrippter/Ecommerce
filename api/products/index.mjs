@@ -26,7 +26,20 @@ export class Products {
   productGet = async (req, res) => {
     const slug = req.params;
     const product = this.query.getProduct(slug);
-    console.log(product.id);
+
+    if (!product) {
+      res.statusCode = 404;
+      res.end(
+        JSON.stringify({ status: 404, message: "nenhum produto encontrado" })
+      );
+      try {
+        throw new RouterError(404, "produto pelo slug não encontrado");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
     const getComments = this.query.getProductsWithComments({
       product_id: product.id,
     });
