@@ -16,13 +16,35 @@ export class Products {
 
   productsGet = async (req, res) => {
     const productsGet = this.query.getProducts();
-    console.log(productsGet);
     if (productsGet.length === 0) {
       res.statusCode = 201;
       res.end(JSON.stringify({ message: "nenhum produto encontrado" }));
     }
 
     res.end(JSON.stringify(productsGet));
+  };
+  productGet = async (req, res) => {
+    const slug = req.params;
+    const product = this.query.getProduct(slug);
+    console.log(product.id);
+    const getComments = this.query.getProductsWithComments({
+      product_id: product.id,
+    });
+    console.log(getComments);
+    const getUserDoComment = this.query.getUserForComment(getComments);
+    const description = getComments.map((comment, index) => {
+      return {
+        ...comment,
+        user: getUserDoComment[index] || null,
+      };
+    });
+
+    res.end(
+      JSON.stringify({
+        product,
+        description,
+      })
+    );
   };
 
   getProductsComments(req, res) {
@@ -145,6 +167,7 @@ export class Products {
 
   routes() {
     this.gerenciarRotas.get("/products", this.productsGet);
+    this.gerenciarRotas.get("/product/:slug", this.productGet);
     this.gerenciarRotas.get("/product/comments", this.getProductsComments);
     this.gerenciarRotas.post(
       "/product/comments/:idProduct",

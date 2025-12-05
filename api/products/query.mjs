@@ -25,8 +25,46 @@ export class Query {
       )
       .all();
   }
+  getProduct({ slug }) {
+    console.log(slug);
+    return this.db
+      .prepare(
+        /*sql */ `
+      
+      SELECT * FROM "products"
+      WHERE "slug" = ?
+    `
+      )
+      .get(slug);
+  }
 
-  getProductsWithComments() {}
+  getUserForComment(user_id) {
+    return user_id.map((dados) => {
+      console.log(dados);
+      return this.db
+        .prepare(
+          /*sql */ `
+        
+        SELECT "name","second_name" FROM "users"
+        WHERE "user_id" = ?
+        
+        `
+        )
+        .all(dados.user_id);
+    });
+  }
+
+  getProductsWithComments({ product_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      SELECT "user_id","comment" FROM "comments"
+      WHERE "product_id" = ?
+    `
+      )
+      .all(product_id);
+  }
 
   postCommentsProducts({ product_id, user_id, comment }) {
     return this.db
