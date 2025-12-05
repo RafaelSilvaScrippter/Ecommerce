@@ -12,7 +12,6 @@ export class Auth {
     this.dataBase = new DbConnect().dbInit();
     this.gerenciarRota();
     this.queryDb = new Query(this.dataBase);
-    console.log(this.middleware);
     this.db();
   }
   postLogin = (req, res) => {
@@ -26,6 +25,7 @@ export class Auth {
         throw new RouterError(404, "Email ou senha incorretos");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 
@@ -46,6 +46,7 @@ export class Auth {
         throw new RouterError(404, "Usuário ou senha incorretos");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 
@@ -96,10 +97,9 @@ export class Auth {
         throw new RouterError(409, "não autorizado");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
-
-    console.log(name, second_name, email);
 
     const { changes } = this.queryDb.updateUser({
       user_id: session.user_id,
@@ -112,6 +112,7 @@ export class Auth {
         throw new RouterError(404, "usuário não atualizado");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 
@@ -132,6 +133,7 @@ export class Auth {
         throw new RouterError(404, "email não cadastrado");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 
@@ -166,6 +168,7 @@ export class Auth {
         throw new RouterError(500, "Algo deu errado");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 
@@ -184,6 +187,7 @@ export class Auth {
         throw new RouterError(500, "erro ao atualizar senha");
       } catch (err) {
         console.log(err);
+        return;
       }
     }
 

@@ -3,6 +3,7 @@ export class Query {
     this.db = db;
   }
   getLogin({ key, value }) {
+    console.log(key, value);
     return this.db
       .prepare(
         /*sql */ `
