@@ -14,9 +14,16 @@ export class Products {
     this.query = new Query(this.database);
   }
 
-  productsGet(req, res) {
-    res.end("products get");
-  }
+  productsGet = async (req, res) => {
+    const productsGet = this.query.getProducts();
+    console.log(productsGet);
+    if (productsGet.length === 0) {
+      res.statusCode = 201;
+      res.end(JSON.stringify({ message: "nenhum produto encontrado" }));
+    }
+
+    res.end(JSON.stringify(productsGet));
+  };
 
   getProductsComments(req, res) {
     res.end("products get comments");

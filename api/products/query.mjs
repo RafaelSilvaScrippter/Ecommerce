@@ -15,17 +15,18 @@ export class Query {
       .run(slug, price, name, photo, description);
   }
 
-  getProducts({ id }) {
+  getProducts() {
     return this.db
       .prepare(
         /*sql */ `
       
       SELECT * FROM "products"
-      WHERE "id" = ?
     `
       )
-      .get(id);
+      .all();
   }
+
+  getProductsWithComments() {}
 
   postCommentsProducts({ product_id, user_id, comment }) {
     return this.db
