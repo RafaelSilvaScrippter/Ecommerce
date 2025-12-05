@@ -143,9 +143,25 @@ export class Products {
     );
   };
 
-  deleteProducCart(req, res) {
-    res.end("delete products cart");
-  }
+  deleteProducCart = async (req, res) => {
+    const { id } = req.params;
+    const getProducsCarts = this.query.getProductCart({ product_id: id });
+    if (!getProducsCarts) {
+      try {
+        throw new RouterError(404, "Produto cart não encontrado ou não existe");
+      } catch (err) {
+        res.statusCode = 404;
+        console.log(err);
+        return;
+      }
+    }
+    const deleteProductInCart = this.query.deleteProductCart({
+      product_id: id,
+    });
+    console.log(deleteProductInCart);
+    res.statusCode = 201;
+    res.end(JSON.stringify({ satus: 201 }));
+  };
 
   getProductsBuy(req, res) {
     res.end("produtos comprados");
@@ -216,7 +232,7 @@ export class Products {
       this.postProductsComments
     );
     this.gerenciarRotas.post("/products/cart/:id", this.postProductsCart);
-    this.gerenciarRotas.delete("/products/cart", this.deleteProducCart);
+    this.gerenciarRotas.delete("/product/cart/:id", this.deleteProducCart);
     this.gerenciarRotas.get("/products/buy", this.getProductsBuy);
     this.gerenciarRotas.post("/products/buy", this.postProductsBuy);
     this.gerenciarRotas.post("/products", this.postProducts);
