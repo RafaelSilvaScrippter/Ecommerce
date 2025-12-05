@@ -111,11 +111,21 @@ export class Query {
       .prepare(
         /*sql */ `
     
-      SELECT "quantity" FROM "product_cart"
+      SELECT  * FROM "product_cart"
       WHERE "product_id" = ?
       
     `
       )
       .get(product_id);
+  }
+  deleteProductCart({ product_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      DELETE  FROM "product_cart" WHERE "product_id" = ?
+    `
+      )
+      .run(product_id);
   }
 }
