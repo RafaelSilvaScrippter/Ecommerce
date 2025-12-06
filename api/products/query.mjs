@@ -196,4 +196,17 @@ export class Query {
       )
       .all();
   }
+
+  productReversal({ product_id, user_id, reason }) {
+    console.log(user_id);
+    return this.db
+      .prepare(
+        /*sql */ `
+      INSERT OR IGNORE INTO "reversal" 
+      ("product_id","user_id","reason")
+      VALUES (?,?,?)
+    `
+      )
+      .run(product_id, user_id, reason);
+  }
 }
