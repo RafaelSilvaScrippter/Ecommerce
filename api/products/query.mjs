@@ -184,4 +184,16 @@ export class Query {
         .run(user_id, products.product_id, products.quantity, products.price);
     }
   }
+
+  getAllProductsBuy() {
+    return this.db
+      .prepare(
+        /*sql */ `
+      
+    SELECT * FROM "buyProducts"
+      
+    `
+      )
+      .all();
+  }
 }

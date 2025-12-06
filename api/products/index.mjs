@@ -176,9 +176,25 @@ export class Products {
     res.end(JSON.stringify({ satus: 201 }));
   };
 
-  getProductsBuy(req, res) {
-    res.end("produtos comprados");
-  }
+  getProductsBuy = async (req, res) => {
+    const isLogged = logged(req, res);
+    if (!isLogged) {
+      try {
+        throw new RouterError(403, "Erro de permissão");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
+    const producstBuy = this.query.getAllProductsBuy();
+    if (producstBuy.length === 0) {
+      res.end(JSON.stringify({ message: "sem produtos comprados" }));
+      return;
+    }
+
+    res.end(JSON.stringify({ products: producstBuy }));
+  };
 
   postProductsBuy = async (req, res) => {
     const isLogged = await logged(req, res);
