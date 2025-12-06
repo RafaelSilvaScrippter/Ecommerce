@@ -11,8 +11,8 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/product/cart/1", {
-        method: "DELETE",
+      const response = await fetch("http://localhost:3000/products/buy", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

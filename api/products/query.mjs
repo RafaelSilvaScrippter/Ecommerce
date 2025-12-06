@@ -118,6 +118,20 @@ export class Query {
       )
       .get(product_id);
   }
+
+  getProductCartAll() {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      SELECT "pc".*,  "p"."price" FROM "product_cart" AS "pc"
+      INNER JOIN "products" AS "p" ON "pc"."product_id" = "p"."id"
+      
+    `
+      )
+      .all();
+  }
+
   deleteProductCart({ product_id }) {
     return this.db
       .prepare(
@@ -127,5 +141,47 @@ export class Query {
     `
       )
       .run(product_id);
+  }
+
+  deleteAllProductsCart() {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      DELETE FROM "product_cart"
+      
+    `
+      )
+      .run();
+  }
+
+  getProductsBuyVerify({ products }) {
+    return products.map((product) => {
+      return this.db
+        .prepare(
+          /*sql */ `
+      
+        SELECT "id" FROM "buyProducts"
+        WHERE "product_buy" = ?
+      `
+        )
+        .get(product.product_id);
+    });
+  }
+
+  postProductsBuy({ user_id: user_id, products_id }) {
+    for (const products of products_id) {
+      return this.db
+        .prepare(
+          /*sql */ `
+            INSERT INTO "buyProducts"
+            ("user_id","product_buy","quantity","price")
+            VALUES
+            (?,?,?,?)
+            ON CONFLICT ("product_buy") DO UPDATE SET "product_buy" = excluded."product_buy";
+            `
+        )
+        .run(user_id, products.product_id, products.quantity, products.price);
+    }
   }
 }
