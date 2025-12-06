@@ -25,7 +25,7 @@ export class Products {
     res.end(JSON.stringify(productsGet));
   };
   productGet = async (req, res) => {
-    const slug = req.params;
+    const { slug } = req.params;
     const product = this.query.getProduct({ key: "slug", value: slug });
 
     if (!product) {
@@ -130,7 +130,20 @@ export class Products {
       product_id: getProductForId.id,
     });
 
-    let incrementQuntity = getProductCart.quantity + 1;
+    if (!getProductCart) {
+      try {
+        throw new RouterError(404, "produto não existe");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    let incrementQuntity;
+    if (getProductCart) {
+      incrementQuntity = getProductCart.quantity + 1;
+    } else {
+      incrementQuntity = 1;
+    }
 
     const postProductCart = this.query.insertProductCart({
       product_id: getProductForId.id,
@@ -167,14 +180,81 @@ export class Products {
     res.end("produtos comprados");
   }
 
-  postProductsBuy(req, res) {
-    res.end("produtos comprados");
-  }
+  postProductsBuy = async (req, res) => {
+    const isLogged = await logged(req, res);
+
+    if (!isLogged) {
+      try {
+        res.statusCode = 401;
+        throw new RouterError(401, "Usuário não possui permissãi");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
+    const getAllProducstCart = this.query.getProductCartAll();
+    if (getAllProducstCart.length == 0) {
+      res.end(
+        JSON.stringify({ message: "sem produtos no carrinho para comprar" })
+      );
+      return;
+    }
+
+    if (!getAllProducstCart) {
+      try {
+        throw new RouterError(500, "Erro no getAllProducts buy");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
+    const verify = this.query.getProductsBuyVerify({
+      products: getAllProducstCart,
+    });
+
+    if (verify) {
+      try {
+        throw new RouterError(
+          409,
+          "Produto já existe continua para adicionar o outro produto"
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    const postProductsBuy = this.query.postProductsBuy({
+      user_id: isLogged.user_id,
+      products_id: getAllProducstCart,
+    });
+
+    if (!postProductsBuy) {
+      try {
+        throw new RouterError(500, "erro no servidor");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+
+    if (postProductsBuy.changes > 0) {
+      const deleteAllProductsCart = this.query.deleteAllProductsCart();
+    }
+
+    res.statusCode = 200;
+    res.end(
+      JSON.stringify({
+        message: "Produto comprado aguarde a confirmação no email",
+      })
+    );
+  };
 
   postProducts = async (req, res) => {
     const { name, price, description, photo, slug } = req.body;
     const session = logged(req, res);
-    if (session.role !== "user") {
+    if (session.role === "user") {
       res.statusCode = 403;
       res.end(JSON.stringify({ status: 403, mensagem: "Erro de permissão" }));
       try {
