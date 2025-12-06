@@ -312,6 +312,41 @@ export class Products {
       JSON.stringify({ status: 201, message: "produto postado com sucesso" })
     );
   };
+  postProductReversal = async (req, res) => {
+    const { reason, product_id } = req.body;
+    const isLogged = await logged(req, res);
+    if (!isLogged) {
+      res.statusCode = 401;
+      res.end(JSON.stringify({ message: "usuário não possui permissão" }));
+    }
+    const verifyProductExists = this.query.getProduct({
+      key: "id",
+      value: product_id,
+    });
+    if (!verifyProductExists) {
+      res.statusCode = 404;
+      res.end(JSON.stringify({ message: "Produto não existe" }));
+      return;
+    }
+    const postReversal = this.query.productReversal({
+      product_id: verifyProductExists.id,
+      user_id: isLogged.user_id,
+      reason: reason,
+    });
+    if (postReversal.changes === 0) {
+      res.end(JSON.stringify({ message: "prduto já está sendo análisado" }));
+      return;
+    }
+
+    if (postReversal.changes > 0) {
+      res.statusCode = 200;
+      res.end(
+        JSON.stringify({
+          message: "Nossa equipe irá cancelar  á compra do séu produto",
+        })
+      );
+    }
+  };
 
   Db() {
     this.database.exec(ProductsTables);
@@ -332,5 +367,9 @@ export class Products {
     this.gerenciarRotas.get("/products/buy", this.getProductsBuy);
     this.gerenciarRotas.post("/products/buy", this.postProductsBuy);
     this.gerenciarRotas.post("/products", this.postProducts);
+    this.gerenciarRotas.post(
+      "/products/buy/reversal",
+      this.postProductReversal
+    );
   }
 }
