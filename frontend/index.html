@@ -11,14 +11,14 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/products/buy/reversal", {
+      const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          product_id: 1,
-          reason: "mudei de ideía"
+          email: "rafa@origamid.com",
+          password: 'silva'
         }),
       });
 

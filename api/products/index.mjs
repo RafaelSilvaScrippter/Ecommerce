@@ -318,6 +318,7 @@ export class Products {
     if (!isLogged) {
       res.statusCode = 401;
       res.end(JSON.stringify({ message: "usuário não possui permissão" }));
+      return;
     }
     const verifyProductExists = this.query.getProduct({
       key: "id",
