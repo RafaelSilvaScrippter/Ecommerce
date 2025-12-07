@@ -4,10 +4,12 @@ import { Auth } from "./api/auth.mjs";
 import { Products } from "./api/products/index.mjs";
 import { CustomRequest } from "./core/http/customRequest.mjs";
 import { readFile } from "node:fs/promises";
+import { Admin } from "./api/admin/index.mjs";
 
 const routes = new Routes();
 new Auth(routes);
 new Products(routes);
+new Admin(routes);
 
 routes.get("/", async (req, res) => {
   const index = await readFile("./frontend/index.html");
