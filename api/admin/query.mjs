@@ -51,4 +51,33 @@ export class Query {
       )
       .run(id);
   }
+
+  selectProductBuy({ product_id, user_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      SELECT * FROM "buyProducts"
+      WHERE "product_buy" = ?
+      AND
+      "user_id" = ?      
+    `
+      )
+      .get(product_id, user_id);
+  }
+  updateStatsProductBuy({ status, product_id, user_id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+    
+      UPDATE "buyProducts"
+      SET "status" = ?
+      WHERE "product_buy" = ?
+      AND 
+      "user_id" = ?
+      
+    `
+      )
+      .run(status, product_id, user_id);
+  }
 }
