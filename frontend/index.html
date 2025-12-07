@@ -11,13 +11,17 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/product/buy/stats/1", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/product/1", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status: "pedido aceito",
+          slug: "lavadoura-de-louca-samsung",
+          price: 1400.99,
+          name: "Lavadoura de louça britania",
+          photo: "files/lavadoura",
+          description: "lavadoura na promoção"
         }),
       });
 

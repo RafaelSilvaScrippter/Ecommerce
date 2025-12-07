@@ -102,6 +102,38 @@ export class Admin {
 
     res.end(JSON.stringify({ message: "status do pedido atualizado" }));
   };
+  updateProduct = async (req, res) => {
+    const { id } = req.params;
+    const { slug, price, name, photo, description } = req.body;
+
+    if (!slug || !price || !name || !photo || !description) {
+      res.end(JSON.stringify({ message: "corpo necessário" }));
+      return;
+    }
+
+    const isLogged = await logged(req, res);
+    if (!isLogged || isLogged.role !== "admin") {
+      res.statusCode = 401;
+      res.end(JSON.stringify({ message: "usuário não possui permissão" }));
+      return;
+    }
+    const update = this.query.updateProduct({
+      id,
+      slug,
+      price,
+      name,
+      photo,
+      description,
+    });
+    if (update.changes === 0) {
+      try {
+        throw new RouterError(500, "erro ao atualizar com put o produto");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    res.end(JSON.stringify({ message: "produto atualizado" }));
+  };
 
   routes() {
     this.gerenciarRotas.get("/products/reversal", this.getProductsReversal);
@@ -110,5 +142,6 @@ export class Admin {
       "/product/buy/stats/:id",
       this.updateSatsProductsBuy
     );
+    this.gerenciarRotas.put("/product/:id", this.updateProduct);
   }
 }
