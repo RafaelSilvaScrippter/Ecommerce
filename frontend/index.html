@@ -11,18 +11,14 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/product/1", {
-        method: "PUT",
+      const response = await fetch("http://localhost:3000/products/search", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          slug: "lavadoura-de-louca-samsung",
-          price: 1400.99,
-          name: "Lavadoura de louça britania",
-          photo: "files/lavadoura",
-          description: "lavadoura na promoção"
-        }),
+          search: "Lavadoura de louça britania"
+        })
       });
 
       const dados = await response.json();

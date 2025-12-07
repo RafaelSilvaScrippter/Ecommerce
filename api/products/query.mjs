@@ -209,4 +209,15 @@ export class Query {
       )
       .run(product_id, user_id, reason);
   }
+  getSearch({ search }) {
+    return this.db
+      .prepare(
+        /*SQL */ `
+    
+      SELECT * FROM "products" WHERE "name" LIKE ?
+      
+    `
+      )
+      .all(search);
+  }
 }
