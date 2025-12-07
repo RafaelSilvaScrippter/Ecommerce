@@ -349,6 +349,18 @@ export class Products {
     }
   };
 
+  getSearchProducts = async (req, res) => {
+    const { search } = req.body;
+    const productsSearch = this.query.getSearch({ search });
+
+    if (productsSearch.length === 0) {
+      res.end(JSON.stringify({ message: "nenhum produto encontrado" }));
+      return;
+    }
+
+    res.end(JSON.stringify(productsSearch));
+  };
+
   Db() {
     this.database.exec(ProductsTables);
     this.database.exec(tablesBuy);
@@ -372,5 +384,6 @@ export class Products {
       "/products/buy/reversal",
       this.postProductReversal
     );
+    this.gerenciarRotas.post("/products/search", this.getSearchProducts);
   }
 }
