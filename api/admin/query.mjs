@@ -80,4 +80,22 @@ export class Query {
       )
       .run(status, product_id, user_id);
   }
+
+  updateProduct({ slug, price, name, photo, description, id }) {
+    return this.db
+      .prepare(
+        /*sql */ `
+      
+      UPDATE "Products"
+      SET "slug" = ?,
+      "price" = ?,
+      "name" = ?,
+      "photo" = ?,
+      "description" = ?
+      WHERE 
+      "id" = ?
+      `
+      )
+      .run(slug, price, name, photo, description, id);
+  }
 }
