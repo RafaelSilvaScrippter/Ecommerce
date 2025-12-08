@@ -9,7 +9,8 @@ export async function CustomRequest(req) {
 
   for await (const chunk of req) {
     let totalChunk = chunk.length + chunk.length;
-    if (totalChunk > 5000) {
+    console.log(totalChunk);
+    if (totalChunk > 20000) {
       try {
         throw new RouterError(500, "corpo da requisção muito grande");
       } catch (err) {
