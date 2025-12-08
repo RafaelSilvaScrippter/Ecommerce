@@ -36,17 +36,20 @@
 
     const photoFIle = document.getElementById('photo')
     async function postPhoto() {
-      const response = await fetch("http://localhost:3000/files", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/octet-stream",
-          "x-filename": photoFIle.files[0].name
-        },
-        body: photoFIle.files[0]
-      });
+      for (photo of photoFIle.files) {
 
-      const dados = await response.json();
-      console.log(dados);
+        const response = await fetch("http://localhost:3000/files", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "x-filename": photo.name
+          },
+          body: photo
+        });
+
+        const dados = await response.json();
+        console.log(dados);
+      }
     }
 
     const fileEnv = document.getElementById('file-env')

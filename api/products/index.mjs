@@ -5,7 +5,7 @@ import { Query } from "./query.mjs";
 import { ProductsTables } from "./tables.mjs";
 import { tablesBuy } from "./tablesBuy.mjs";
 import { TableCart } from "./tablesCart.mjs";
-import { createWriteStream } from "fs";
+import { createWriteStream, readFileSync } from "fs";
 import { pipeline } from "stream/promises";
 
 export class Products {
@@ -46,7 +46,6 @@ export class Products {
     const getComments = this.query.getProductsWithComments({
       product_id: product.id,
     });
-    console.log(getComments);
     const getUserDoComment = this.query.getUserForComment(getComments);
     const description = getComments.map((comment, index) => {
       return {
@@ -371,6 +370,14 @@ export class Products {
     console.log(name);
   };
 
+  getFile = async (req, res) => {
+    res.setHeader("Content-Type", "application/octet-stream");
+    const { slug } = req.params;
+    const readFile = readFileSync(`./files/${slug}`);
+    console.log(readFile);
+    res.end(readFile);
+  };
+
   Db() {
     this.database.exec(ProductsTables);
     this.database.exec(tablesBuy);
@@ -396,5 +403,6 @@ export class Products {
     );
     this.gerenciarRotas.post("/files", this.filesUpload);
     this.gerenciarRotas.post("/products/search", this.getSearchProducts);
+    this.gerenciarRotas.get("/files/:slug", this.getFile);
   }
 }
