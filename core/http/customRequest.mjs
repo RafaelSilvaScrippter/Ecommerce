@@ -1,3 +1,5 @@
+import { RouterError } from "../utils/routerError.mjs";
+
 export async function CustomRequest(req) {
   const url = new URL(req.url || "/", "http://localhost");
   req.pathname = url.pathname;
@@ -6,6 +8,15 @@ export async function CustomRequest(req) {
   const chunks = [];
 
   for await (const chunk of req) {
+    let totalChunk = chunk.length + chunk.length;
+    if (totalChunk > 5000) {
+      try {
+        throw new RouterError(500, "corpo da requisção muito grande");
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
     chunks.push(chunk);
   }
   const body = Buffer.concat(chunks).toString("utf-8");

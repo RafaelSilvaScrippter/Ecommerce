@@ -18,17 +18,22 @@ routes.get("/", async (req, res) => {
 });
 
 const server = createServer(async (request, res) => {
-  res.setHeader("Content-Type", "application/json");
-  const req = await CustomRequest(request);
-  const result = routes.findHandler(req.method, req.url);
-  if (!result) {
-    res.writeHead(404);
-    res.end("Not found");
+  try {
+    res.setHeader("Content-Type", "application/json");
+    const req = await CustomRequest(request);
+    const result = routes.findHandler(req.method, req.url);
+    if (!result) {
+      res.writeHead(404);
+      res.end("Not found");
+      return;
+    }
+
+    req.params = result.params;
+    result.handler(req, res);
+  } catch (err) {
+    console.log(err);
     return;
   }
-
-  req.params = result.params;
-  result.handler(req, res);
 });
 
 server.listen(3000, () => {

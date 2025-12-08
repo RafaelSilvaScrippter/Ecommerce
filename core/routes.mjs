@@ -36,7 +36,7 @@ export class Routes {
       }
     }
 
-    return params; // sucesso
+    return params;
   }
 
   findHandler(method, url) {
