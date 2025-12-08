@@ -11,13 +11,14 @@
 
   <script>
     async function postLogin() {
-      const response = await fetch("http://localhost:3000/products/search", {
+      const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search: "Lavadoura de louça britania"
+          email: "rafa@origamid.com",
+          password: "silva"
         })
       });
 
