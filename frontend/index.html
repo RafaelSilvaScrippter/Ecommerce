@@ -9,23 +9,53 @@
 
 <body>
 
+  <form id="file-env" action="post">
+    <input type="file" name="photo" id="photo">
+    <button type="submit">submit</button>
+  </form>
+
   <script>
-    async function postLogin() {
-      const response = await fetch("http://localhost:3000/auth/login", {
+    async function postLogin(nameImg) {
+      const response = await fetch("http://localhost:3000/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "rafa@origamid.com",
-          password: "silva"
+          slug: "fone-de-ouvido",
+          name: "Fone de ouvido",
+          price: 299.00,
+          photo: `./files/${nameImg}`,
+          description: "Fone de ouvido sem fio ABS - Apple"
         })
       });
 
       const dados = await response.json();
       console.log(dados);
     }
-    postLogin();
+
+    const photoFIle = document.getElementById('photo')
+    async function postPhoto() {
+      const response = await fetch("http://localhost:3000/files", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "x-filename": photoFIle.files[0].name
+        },
+        body: photoFIle.files[0]
+      });
+
+      const dados = await response.json();
+      console.log(dados);
+    }
+
+    const fileEnv = document.getElementById('file-env')
+    fileEnv.addEventListener("submit", (e) => {
+      e.preventDefault()
+      postPhoto()
+      postLogin(photoFIle.files[0].name)
+    })
+
 
   </script>
 </body>

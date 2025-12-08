@@ -5,6 +5,8 @@ import { Query } from "./query.mjs";
 import { ProductsTables } from "./tables.mjs";
 import { tablesBuy } from "./tablesBuy.mjs";
 import { TableCart } from "./tablesCart.mjs";
+import { createWriteStream } from "fs";
+import { pipeline } from "stream/promises";
 
 export class Products {
   constructor(routes) {
@@ -268,6 +270,7 @@ export class Products {
   };
 
   postProducts = async (req, res) => {
+    console.log("oa");
     const { name, price, description, photo, slug } = req.body;
     const session = logged(req, res);
     if (session.role === "user") {
@@ -291,6 +294,7 @@ export class Products {
         return;
       }
     }
+
     const postProduto = this.query.postProducts({
       name,
       price,
@@ -360,6 +364,12 @@ export class Products {
 
     res.end(JSON.stringify(productsSearch));
   };
+  filesUpload = async (req, res) => {
+    const name = req.headers["x-filename"];
+    const writeStream = createWriteStream(`./files/${name}`);
+    await pipeline(req, writeStream);
+    console.log(name);
+  };
 
   Db() {
     this.database.exec(ProductsTables);
@@ -384,6 +394,7 @@ export class Products {
       "/products/buy/reversal",
       this.postProductReversal
     );
+    this.gerenciarRotas.post("/files", this.filesUpload);
     this.gerenciarRotas.post("/products/search", this.getSearchProducts);
   }
 }
